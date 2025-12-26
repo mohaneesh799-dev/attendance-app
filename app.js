@@ -1,6 +1,7 @@
+const fs = require('fs'); // ADD THIS LINE
 const PDFDocument = require('pdfkit');
 const express = require('express');
-const mongoose = require('mongoose'); // ADD THIS
+const mongoose = require('mongoose');
 const app = express();
 const path = require('path');
 
