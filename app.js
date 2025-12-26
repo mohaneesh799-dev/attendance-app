@@ -18,12 +18,11 @@ const userSchema = new mongoose.Schema({
     approved: { type: Boolean, default: false }
 });
 const User = mongoose.model('User', userSchema);
-
-// ... existing User model code at Line 20
-const User = mongoose.model('User', userSchema); 
+ 
 
 
 // --- ADD EMAIL SETTINGS HERE (Line 21) ---
+
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
@@ -199,6 +198,10 @@ app.get('/lecturer', (req, res) => {
 });
 
 
+
+app.get('/register', (req, res) => {
+    res.render('register');
+});
 
 
 app.post('/register', async (req, res) => {
