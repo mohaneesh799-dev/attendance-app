@@ -6,7 +6,7 @@ const app = express();
 const path = require('path');
 
 // The Bridge
-const mongoURI = "mongodb+srv://admin:Mohan0354@cluster0.xxx.mongodb.net/attendanceDB";
+const mongoURI = "mongodb+srv://admin:Mohan0354@cluster0.0jkiiez.mongodb.net/attendanceDB";
 mongoose.connect(mongoURI)
     .then(() => console.log("✅ Connected to MongoDB"))
     .catch(err => console.error("❌ Connection Error:", err));
