@@ -10,7 +10,6 @@ const mongoURI = "mongodb+srv://admin:Mohan0354@cluster0.0jkiiez.mongodb.net/att
 mongoose.connect(mongoURI)
     .then(() => console.log("✅ Connected to MongoDB"))
     .catch(err => console.error("❌ Connection Error:", err));
-
 // The User Schema
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
