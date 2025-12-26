@@ -1,8 +1,42 @@
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
 const express = require('express');
+const mongoose = require('mongoose'); // ADD THIS
 const app = express();
 const path = require('path');
+
+// The Bridge
+const mongoURI = "mongodb+srv://admin:Mohan0354@cluster0.xxx.mongodb.net/attendanceDB";
+mongoose.connect(mongoURI)
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch(err => console.error("❌ Connection Error:", err));
+
+// The User Schema
+const userSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: { type: String, required: true },
+    approved: { type: Boolean, default: false }
+});
+const User = mongoose.model('User', userSchema);
+
+// ... existing User model code at Line 20
+const User = mongoose.model('User', userSchema); 
+
+
+// --- ADD EMAIL SETTINGS HERE (Line 21) ---
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'mohaneesh799@gmail.com', // Your developer email
+        pass: 'parmvjyxydebguzj'     // Generated from Google Account Security
+    }
+});
+// ------------------------------------------
+
+app.set('view engine', 'ejs'); // This is currently your Line 22
+
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
@@ -48,34 +82,25 @@ app.get('/', (req, res) => res.render('login'));
 
 
 
-app.post('/login', (req, res) => {
-    const { email, role } = req.body;
-    
-    // 1. Find the user in your 'users' array (Line 15 in app.js)
-    const user = users.find(u => u.email === email && u.role === role);
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        // Search for the user in MongoDB
+        const user = await User.findOne({ email, password });
 
-    // 2. CHECK: If user doesn't exist AND it's not a Student (since students aren't in the users array)
-    if (!user && role !== "Student") {
-        return res.send("User not found in system.");
-    }
-
-    // 3. RULE: Students and Leaders must use @college.edu (Line 35)
-    if ((role === "Student" || role === "Leader") && !email.endsWith("@college.edu")) {
-        return res.send("ACCESS DENIED: Please use your official College Email.");
-    }
-
- if ((role === "Leader" || role === "Lecturer") && !user.approved) {
-    return res.send("ACCESS DENIED: You have not been granted permission by the Master yet.");
-}
-
-    // 5. SUCCESS: Send to the correct dashboard
-    if (role === "Student") {
-        // We pass the global 'studentsList' so the student sees updated data
-        res.render('student', { user: { email: email, role: role }, students: studentsList });
-    } else {
-        // Master, Lecturer, and Leader use their respective EJS files
-        // We pass 'users' so the Master can see who needs approval
-        res.render(role.toLowerCase(), { user: user, users: users, students: studentsList });
+        if (user && user.approved) {
+            // If approved, send them to their dashboard
+            res.redirect(`/${user.role.toLowerCase()}`);
+        } else if (user && !user.approved) {
+            // If they exist but you haven't clicked 'Approve' in your email yet
+            res.send("Your account is pending approval from the developer.");
+        } else {
+            // If the email or password doesn't match
+            res.send("Invalid credentials.");
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
     }
 });
 
@@ -176,8 +201,33 @@ app.get('/lecturer', (req, res) => {
 
 
 
+app.post('/register', async (req, res) => {
+    const { email, password, role } = req.body;
+    try {
+        const newUser = new User({
+            email,
+            password,
+            role,
+            approved: false // Starts as unapproved
+        });
+        await newUser.save();
 
+        // Send Email to you (The Developer)
+        const approvalLink = `https://attendance-app-jjtx.onrender.com/approve-master/${newUser._id}`;
+        
+        await transporter.sendMail({
+            from: 'your-email@gmail.com',
+            to: 'your-email@gmail.com', // Send to yourself
+            subject: 'New Master Registration Request',
+            html: `<p>User <b>${email}</b> wants to be a Master.</p>
+                   <a href="${approvalLink}">Click here to Approve this Master</a>`
+        });
 
+        res.send("Registration request sent! Please wait for developer approval.");
+    } catch (err) {
+        res.status(500).send("Error: " + err.message);
+    }
+});
 
 
 
@@ -187,4 +237,15 @@ app.get('/lecturer', (req, res) => {
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server running: http://localhost:${PORT}`);
+});
+
+
+
+app.get('/approve-master/:id', async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.params.id, { approved: true });
+        res.send("✅ Master account has been successfully approved and assigned!");
+    } catch (err) {
+        res.status(500).send("Approval failed.");
+    }
 });
