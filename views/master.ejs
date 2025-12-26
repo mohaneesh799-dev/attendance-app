@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>Master Dashboard</title></head>
+<body style="font-family: Arial; padding: 30px; background: #f4f4f4;">
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h1>Level 1: Master Control</h1>
+        <hr>
+       <h3>Pending Approvals:</h3>
+<table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse;">
+    <tr style="background-color: #eee;">
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    <% users.forEach(function(u) { %>
+        <% if (u.role !== 'Master') { %>
+            <tr>
+                <td><%= u.email %></td>
+                <td><%= u.role %></td>
+                <td><%= u.approved ? 'Approved' : 'Pending' %></td>
+                <td>
+                    <% if (!u.approved) { %>
+                        <form action="/approve-user" method="POST">
+                            <input type="hidden" name="userEmail" value="<%= u.email %>">
+                            <button type="submit" style="background-color: green; color: white; cursor: pointer;">
+                                Approve <%= u.role %>
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <span style="color: green;">✔ Active</span>
+                    <% } %>
+                </td>
+            </tr>
+        <% } %>
+    <% }); %>
+</table>

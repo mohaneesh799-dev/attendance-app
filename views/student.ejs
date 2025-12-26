@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal</title>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; background-color: #f4f4f9;">
+    <div style="max-width: 700px; margin: auto; border: 1px solid #ddd; padding: 30px; border-radius: 12px; background-color: #fff; box-shadow: 0px 4px 10px rgba(0,0,0,0.1);">
+        <h1 style="color: #2c3e50; text-align: center;">Student Dashboard</h1>
+        <p style="text-align: center; color: #7f8c8d;">Welcome back! Here is your latest attendance record.</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+        <h3>Attendance Overview</h3>
+        <table border="1" cellpadding="12" style="width: 100%; border-collapse: collapse; margin-top: 10px; border: 1px solid #ddd;">
+            <thead>
+                <tr style="background-color: #34495e; color: white; text-align: left;">
+                    <th>Student Name</th>
+                    <th>Current Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% students.forEach(function(s) { %>
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td><%= s.name %></td>
+                        <td>
+    <span style="padding: 5px 10px; border-radius: 5px; font-weight: bold; color: white; background-color: <%= s.status === 'Absent' ? '#e74c3c' : '#27ae60' %>">
+        <%= s.status %>
+    </span>
+</td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 25px; padding: 15px; background-color: #fff3cd; border-left: 5px solid #ffecb5; border-radius: 4px;">
+            <p style="margin: 0; font-size: 0.9em; color: #856404;">
+                <strong>Notice:</strong> If your status is incorrect, please contact your <b>Lecturer</b> immediately.
+            </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">← Logout</a>
+        </div>
+    </div>
+</body>
+</html>

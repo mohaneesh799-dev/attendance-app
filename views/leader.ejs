@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head><title>Leader - Take Attendance</title></head>
+<body style="font-family: Arial; padding: 20px;">
+    <h1>Class Leader Portal (Level 3)</h1>
+    <p>Mark attendance for today's periods.</p>
+    <hr>
+    
+    <form action="/submit-attendance" method="POST">
+        <label><b>Select Subject:</b></label><br>
+        <label><b>Enter Subject Name:</b></label><br>
+        <input type="text" name="subject" placeholder="e.g. Data Structures, Physics..." required style="padding: 8px; width: 300px;"> 
+        <input type="hidden" name="userEmail" value="<%= user.email %>">
+        <br><br>
+        
+        <table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse;">
+            <tr style="background: #f2f2f2;">
+                <th>Student Name</th>
+                <th>Status (Present / Absent)</th>
+            </tr>
+            <% students.forEach(function(s) { %>
+            <tr>
+                <td><%= s.name %></td>
+                <td>
+                    <input type="radio" name="status_<%= s.id %>" value="Present" checked> Present
+                    <input type="radio" name="status_<%= s.id %>" value="Absent"> Absent
+                </td>
+            </tr>
+            <% }); %>
+        </table>
+        
+        <br>
+        <button type="submit" style="padding: 10px 20px; background: blue; color: white; border: none; cursor: pointer;">
+            Submit Attendance & Generate PDF
+        </button>
+    </form>
+</body>
+</html>

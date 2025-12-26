@@ -1,0 +1,26 @@
+<div style="font-family: Arial; padding: 20px;">
+    <h2>Lecturer Dashboard</h2>
+    <p>Modify Attendance Mistakes</p>
+    <table border="1" cellpadding="10" style="width:100%; border-collapse: collapse;">
+        <tr style="background-color: #f2f2f2;">
+            <th>Student</th>
+            <th>Current Status</th>
+            <th>Action</th>
+        </tr>
+        <% students.forEach(function(s) { %>
+    <tr>
+        <td><%= s.name %></td>
+        <td><strong><%= s.status || 'Present' %></strong></td>
+        <td>
+            <form action="/edit-attendance" method="POST">
+                <input type="hidden" name="studentId" value="<%= s.id %>">
+                <input type="hidden" name="newStatus" value="<%= s.status === 'Absent' ? 'Present' : 'Absent' %>">
+                <button type="submit">Switch to <%= s.status === 'Absent' ? 'Present' : 'Absent' %></button>
+            </form>
+        </td>
+    </tr>
+<% }); %>
+    </table>
+    <br>
+    <a href="/">Logout</a>
+</div>
