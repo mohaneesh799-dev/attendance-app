@@ -21,8 +21,6 @@ const User = mongoose.model('User', userSchema);
  
 
 
-// --- ADD EMAIL SETTINGS HERE (Line 21) ---
-
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
